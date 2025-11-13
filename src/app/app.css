@@ -1,0 +1,262 @@
+/* 
+  ==========================================
+  NAVBAR
+  ==========================================
+*/
+.navbar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  
+  /* 
+    position: sticky;
+    - Se queda fijo al hacer scroll
+    
+    top: 0;
+    - Se pega arriba
+    
+    z-index: 1000;
+    - Aparece sobre otros elementos
+  */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+}
+
+/* BRAND/LOGO */
+.nav-brand a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: white;
+}
+
+.logo {
+  font-size: 2rem;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* MENÚ */
+.nav-menu {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 
+  LINK ACTIVO
+  
+  .active: Clase agregada por routerLinkActive
+*/
+.nav-link.active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 
+  Subrayado en link activo
+  
+  ::after - Pseudo-elemento
+  - Crea elemento después del link
+*/
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+}
+
+/* BOTÓN MENÚ MÓVIL */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 5px;
+}
+
+/* 
+  ==========================================
+  BREADCRUMB
+  ==========================================
+*/
+.breadcrumb-container {
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 12px 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.breadcrumb-text {
+  margin: 0;
+  color: #666;
+}
+
+.breadcrumb-text a {
+  color: #667eea;
+  text-decoration: none;
+}
+
+.breadcrumb-text a:hover {
+  text-decoration: underline;
+}
+
+/* 
+  ==========================================
+  MAIN CONTENT
+  ==========================================
+*/
+.main-content {
+  /* 
+    min-height: Altura mínima
+    - calc(): Función CSS para cálculos
+    - 100vh: 100% del viewport height (altura de pantalla)
+    - 70px: Altura del navbar
+    - 100px: Altura del footer
+    
+    RESULTADO:
+    - Contenido ocupa al menos toda la pantalla
+    - Footer siempre al fondo (incluso con poco contenido)
+  */
+  min-height: calc(100vh - 70px - 100px);
+  background: #f5f6fa;
+}
+
+/* 
+  ==========================================
+  FOOTER
+  ==========================================
+*/
+.footer {
+  background: #2c3e50;
+  color: white;
+  padding: 30px 20px;
+  
+  /* 
+    margin-top: auto;
+    - Empuja footer al fondo
+    - Funciona si body/html tienen min-height: 100vh
+  */
+  margin-top: auto;
+}
+
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-container p {
+  margin: 10px 0;
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+  transition: opacity 0.3s;
+}
+
+.footer-links a:hover {
+  opacity: 0.7;
+}
+
+/* 
+  ==========================================
+  RESPONSIVE (MÓVIL)
+  ==========================================
+*/
+@media (max-width: 768px) {
+  /* Mostrar botón de menú */
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  /* Menú móvil */
+  .nav-menu {
+    /* 
+      position: fixed;
+      - Posición fija en la pantalla
+      - No se mueve al hacer scroll
+    */
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    flex-direction: column;
+    padding: 20px;
+    
+    /* 
+      transform: translateX(-100%);
+      - Mueve 100% a la izquierda (fuera de pantalla)
+      - EFECTO: Menú oculto
+    */
+    transform: translateX(-100%);
+    
+    transition: transform 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* 
+    Menú abierto
+    
+    .active: Clase agregada cuando mobileMenuOpen es true
+  */
+  .nav-menu.active {
+    /* 
+      transform: translateX(0);
+      - Vuelve a posición original
+      - EFECTO: Menú visible
+    */
+    transform: translateX(0);
+  }
+
+  .nav-link {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Ocultar subrayado en móvil */
+  .nav-link.active::after {
+    display: none;
+  }
+}

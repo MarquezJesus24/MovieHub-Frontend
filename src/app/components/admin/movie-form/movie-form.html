@@ -1,0 +1,219 @@
+<div class="form-container">
+  <header class="form-header">
+    <h1>{{ isEditMode() ? '✏️ Editar Película' : '➕ Nueva Película' }}</h1>
+
+    <p class="subtitle">
+      {{ isEditMode()
+      ? 'Modifica los datos de la película'
+      : 'Completa los datos de la nueva película'
+      }}
+    </p>
+  </header>
+
+  <nav class="breadcrumb">
+    <a routerLink="/admin/movies">← Volver a lista</a>
+  </nav>
+
+  @if (loading()) {
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando película...</p>
+  </div>
+  }
+  @if (error()) {
+  <div class="alert alert-error">
+    {{ error() }}
+  </div>
+  }
+
+  @if (!loading()) {
+  <form [formGroup]="movieForm" (ngSubmit)="onSubmit()" class="movie-form">
+    <div class="form-grid">
+      <div class="form-column">
+        <div class="form-group">
+          <label for="nombre" class="required">Nombre de la Película</label>
+          <input type="text" id="nombre" formControlName="name" [class]="getFieldClass('nombre')"
+            placeholder="Ej: El Padrino">
+          @if (isFieldInvalid('nombre')) {
+          <div class="field-error">
+            {{ getErrorMessage('nombre') }}
+          </div>
+          }
+          <div class="field-info">
+            {{ getCharCount('nombre') }} / 100 caracteres
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="posterPath" class="required">URL de la Imagen</label>
+          <input type="url" id="posterPath" formControlName="posterPath" [class]="getFieldClass('posterPath')"
+            placeholder="https://ejemplo.com/imagen.jpg">
+
+          @if (isFieldInvalid('posterPath')) {
+          <div class="field-error">
+            {{ getErrorMessage('posterPath') }}
+          </div>
+          }
+          <div class="field-info">
+            Formatos aceptados: JPG, PNG, GIF, WEBP
+          </div>
+
+          @if (movieForm.get('posterPath')?.valid) {
+          <div class="image-preview">
+            <img [src]="movieForm.get('posterPath')?.value" alt="Preview" (error)="onImageError()">
+          </div>
+          }
+        </div>
+        <div class="form-group">
+          <label for="descripcion" class="required">Descripción</label>
+
+          <textarea id="descripcion" formControlName="description" [class]="getFieldClass('descripcion')" rows="8"
+            placeholder="Escribe una descripción detallada de la película..."></textarea>
+
+          @if (isFieldInvalid('descripcion')) {
+          <div class="field-error">
+            {{ getErrorMessage('descripcion') }}
+          </div>
+          }
+
+          <div class="char-counter">
+            {{ getCharCount('descripcion') }} / 1000 caracteres
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="rating" class="required">
+            rating:
+            <span class="rating-valor">
+              {{ movieForm.get('rating')?.value || 0 }}/10
+            </span>
+          </label>
+
+          <input type="range" id="rating" formControlName="rating" min="0" max="10" step="0.1" class="range-input">
+          <div class="rating-progress">
+            <div class="rating-bar" [style.width.%]="getRatingProgress()" [style.backgroundColor]="getRatingColor()">
+            </div>
+          </div>
+
+          <input type="number" formControlName="rating" min="0" max="10" step="0.1" class="number-input">
+
+          @if (isFieldInvalid('rating')) {
+          <div class="field-error">
+            {{ getErrorMessage('rating') }}
+          </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="estado" class="required">Estado</label>
+          <select id="estado" formControlName="status" class="select-input">
+            <option value="edicion">En Edición</option>
+            <option value="publicada">Publicada</option>
+          </select>
+          <div class="status-preview">
+            <span class="badge" [class.badge-warning]="movieForm.get('estado')?.value === 'edicion'"
+              [class.badge-success]="movieForm.get('estado')?.value === 'publicada'">
+              {{ movieForm.get('estado')?.value }}
+            </span>
+
+            <span class="status-description">
+              {{ movieForm.get('estado')?.value === 'publicada'
+              ? 'Visible en el catálogo público'
+              : 'Solo visible en administración' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-column">
+        <div class="preview-section">
+          <h3>Vista Previa</h3>
+          <div class="movie-card-preview">
+            <div class="preview-image-container">
+              @if (imagePreview()) {
+              <img [src]="imagePreview()" [alt]="movieForm.get('name')?.value" (error)="onImageError()"
+                class="preview-image">
+              } @else {
+              <div class="preview-placeholder">
+                <p>📷</p>
+                <p>Ingresa una URL válida para ver la imagen</p>
+              </div>
+              }
+              @if (movieForm.get('rating')?.value > 0) {
+              <div class="preview-badge">
+                ⭐ {{ movieForm.get('rating')?.value }}
+              </div>
+              }
+            </div>
+            <div class="preview-content">
+              <h4 class="preview-title">
+                {{ movieForm.get('name')?.value || 'Nombre de la película' }}
+              </h4>
+
+              <p class="preview-description">
+                <!-- 
+                    ¿Hay descripción?
+                      SÍ:
+                        ¿Es más larga que 150 caracteres?
+                          SÍ: Mostrar primeros 150 + "..."
+                          NO: Mostrar completa
+                      NO: Mostrar placeholder
+                  -->
+                {{
+                movieForm.get('description')?.value
+                ? (movieForm.get('description')?.value.length > 150
+                ? movieForm.get('description')?.value.substring(0, 150) + '...'
+                : movieForm.get('description')?.value)
+                : 'Descripción de la película...'
+                }}
+              </p>
+
+              <div class="preview-footer">
+                <span class="preview-date">📅 Hoy</span>
+                <button type="button" class="preview-button">
+                  Ver Más →
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="form-status">
+            <h4>Estado del Formulario</h4>
+            <ul>
+              <li>
+                <span class="status-label">Válido:</span>
+                <span [class.text-success]="movieForm.valid" [class.text-error]="!movieForm.valid">
+                  {{ movieForm.valid ? '✅ Sí' : '❌ No' }}
+                </span>
+              </li>
+              <li>
+                <span class="status-label">Modificado:</span>
+                <span>{{ movieForm.dirty ? '✅ Sí' : '❌ No' }}</span>
+              </li>
+              <li>
+                <span class="status-label">Tocado:</span>
+                <span>{{ movieForm.touched ? '✅ Sí' : '❌ No' }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="submitting()">
+        ❌ Cancelar
+      </button>
+      <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="submitting() || !movieForm.dirty">
+        🔄 Resetear
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="movieForm.invalid || submitting()">
+        @if (submitting()) {
+        <span>⏳ Guardando...</span>
+        } @else {
+        <span>
+          {{ isEditMode() ? '💾 Actualizar' : '➕ Crear' }}
+        </span>
+        }
+      </button>
+    </div>
+  </form>
+  }
+</div>
