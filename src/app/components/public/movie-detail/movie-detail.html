@@ -1,0 +1,52 @@
+<div class="detail-container">
+  
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando película...</p>
+    </div>
+  }
+
+  @if (error() && !loading()) {
+    <div class="error-container">
+      <p class="error-message">{{ error() }}</p>
+      <button class="btn-back" (click)="goBack()">
+        ← Volver al catálogo
+      </button>
+    </div>
+  }
+
+  @if (movie() && !loading() && !error()) {
+    <button class="btn-back" (click)="goBack()">
+      ← Volver al catálogo
+    </button>
+
+    <div class="detail-grid">
+      
+      <div class="detail-image">
+        <img [src]="movie()!.posterPath" [alt]="movie()!.name">
+        <div class="rating-badge">
+          {{ getRatingStars() }} {{ movie()!.rating }}/10
+        </div>
+      </div>
+
+      <div class="detail-info">
+        <h1>{{ movie()!.name }}</h1>
+        
+        <div class="meta-info">
+          <span class="meta-item">
+            📅 {{ movie()!.createAt| date:'dd/MM/yyyy' }}
+          </span>
+          <span class="meta-item">
+            ⭐ {{ movie()!.rating }}/10
+          </span>
+        </div>
+
+        <div class="description">
+          <h3>Descripción</h3>
+          <p>{{ movie()!.description }}</p>
+        </div>
+      </div>
+    </div>
+  }
+</div>

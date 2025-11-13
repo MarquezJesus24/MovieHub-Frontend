@@ -1,0 +1,144 @@
+<div class="admin-container">
+  <header class="admin-header">
+    <div class="header-content">
+      <h1>🎬 Administración de Películas</h1>
+      <p class="subtitle">Gestiona el catálogo completo</p>
+    </div>
+    <button class="btn-primary" (click)="createMovie()">
+      ➕ Nueva Película
+    </button>
+  </header>
+   <div class="toolbar">
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Buscar por nombre o descripción..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      >
+    </div>
+    <div class="filter-box">
+      <label>Estado:</label>
+      <select 
+        [value]="filterStatus()"
+        (change)="onFilterChange($any($event.target).value)"
+      >
+        <option value="TODOS">Todos</option>
+        <option value="publicada">Publicadas</option>
+        <option value="edicion">En Edición</option>
+      </select>
+    </div>
+    <button 
+      class="btn-refresh" 
+      (click)="loadMovies()"
+      [disabled]="loading()"
+    >
+      🔄 Actualizar
+    </button>
+  </div>
+  @if (!loading() && !error()) {
+    <div class="info-bar">
+      <p>
+        Mostrando <strong>{{ filteredMovies().length }}</strong> 
+        de <strong>{{ movies().length }}</strong> películas
+      </p>
+    </div>
+  }
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando películas...</p>
+    </div>
+  }
+  @if (error() && !loading()) {
+    <div class="error-container">
+      <p class="error-message">{{ error() }}</p>
+      <button class="btn-retry" (click)="loadMovies()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  @if (!loading() && !error()) {
+    <div class="table-container">
+      <table class="movies-table">
+        <thead>
+          <tr>
+            <th>posterPath</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>rating</th>
+            <th>Estado</th>
+            <th>Fecha Creación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (movie of filteredMovies(); track movie.id) {
+            <tr>             
+              <td>
+                <img 
+                  [src]="movie.posterPath" 
+                  [alt]="movie.name" 
+                  class="thumbnail"
+                >
+              </td>
+              <td class="movie-name">{{ movie.name }}</td>            
+              <td class="movie-description">
+                {{ movie.description.substring(0, 80) }}
+                @if (movie.description.length > 80) {
+                  <span>...</span>
+                }
+              </td>
+              <td class="rating">
+                <span class="stars">⭐</span>
+                {{ movie.rating.toFixed(1) }}
+              </td>
+              <td>
+                <span 
+                  class="badge"
+                  [class]="getStatusClass(movie.status)"
+                >
+                  {{ movie.status }}
+                </span>
+              </td>
+              <td>{{ movie.createAt| date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="actions">
+                <div class="action-buttons">                
+                  <button 
+                    class="btn-icon btn-edit"
+                    (click)="editMovie(movie.id)"
+                    title="Editar"
+                  >
+                    ✏️
+                  </button>
+                  <button 
+                    class="btn-icon btn-toggle"
+                    (click)="toggleStatus(movie)"
+                    [title]="movie.status === 'publicada' ? 'Despublicar' : 'Publicar'"
+                  >
+                    {{ movie.status === 'publicada' ? '📤' : '📥' }}
+                  </button>
+                  <button 
+                    class="btn-icon btn-delete"
+                    (click)="deleteMovie(movie)"
+                    title="Eliminar"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+            
+          } @empty {            
+            <tr>
+              <td colspan="8" class="no-results">
+                <p>No se encontraron películas</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
